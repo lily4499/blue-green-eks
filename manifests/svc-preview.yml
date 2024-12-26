@@ -1,11 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: svc-preview
+  name: preview-service
+  namespace: default
 spec:
-  type: LoadBalancer
-  ports:
-    - port: 80
-      targetPort: 3000
   selector:
     app: sample-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+
