@@ -15,16 +15,17 @@ pipeline {
             }
         }
         // run sonarqube test
-        stage('Run Sonarqube') {
+        stage('Run SonarQube') {
             environment {
-                scannerHome = tool 'sonar-scanner';
+                scannerHome = tool name: 'sonar-scanner'  // Replace with the correct scanner name
             }
             steps {
-              withSonarQubeEnv(credentialsId: 'sonar-token', installationName: 'sonar-server') {
-                sh "${scannerHome}/bin/sonar-scanner"
-              }
+                withSonarQubeEnv('sonar-server') {  // Replace 'sonar-server' with your configured SonarQube server name
+                    sh "${scannerHome}/bin/sonar-scanner -Dproject.settings=sonar-project.properties"
+                }
             }
         }
+
         stage('Build docker image') {
             steps {  
                 sh 'docker build -t $APP_NAME:$BUILD_NUMBER .'
