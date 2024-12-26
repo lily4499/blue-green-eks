@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: sample-app
-        image: laly9999/sample-app:latest
+        image: laly9999/sample-app:
         ports:
         - containerPort: 3000
 
