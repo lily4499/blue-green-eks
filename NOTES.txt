@@ -1,0 +1,324 @@
+Directory Structure
+
+blue-service/
+├── public/
+│   ├── css/
+│   │   └── bootstrap.min.css
+│   └── img/
+│       └── blue-logo.png
+├── views/
+│   └── index.html
+├── app.js
+├── package.json
+├── package-lock.json
+├── Dockerfile
+└── README.md
+
+1. Create the App Files
+app.js
+
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Serve static files
+app.use('/css', express.static(__dirname + '/public/css'));
+app.use('/img', express.static(__dirname + '/public/img'));
+
+// Routes
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html');
+});
+
+app.listen(PORT, () => {
+  console.log(`Blue Service is running on port ${PORT}`);
+});
+
+package.json
+
+{
+  "name": "blue-service",
+  "version": "1.0.0",
+  "description": "Node.js app for Blue Service",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
+Run the following command to install dependencies:
+
+npm install
+
+views/index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blue Service</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body class="bg-primary text-white">
+  <div class="container text-center py-5">
+    <img src="/img/blue-logo.png" alt="Blue Service Logo" class="mb-4" style="max-width: 200px;">
+    <h1>Welcome to the Blue Service</h1>
+    <p class="lead">This is the blue version of the application.</p>
+  </div>
+</body>
+</html>
+
+public/css/bootstrap.min.css
+
+Download Bootstrap CSS using the following command:
+
+curl -o public/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css
+
+public/img/blue-logo.png
+
+You can use the blue logo generated earlier or create your own.
+2. Dockerize the App
+Dockerfile
+
+# Base image
+FROM node:16-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy app files
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start app
+CMD ["npm", "start"]
+
+3. Build and Run the App Locally
+Build the Docker Image:
+
+docker build -t yourdockerhubusername/blue-service:latest .
+
+Run the App Locally:
+
+docker run -p 3000:3000 yourdockerhubusername/blue-service:latest
+
+Visit http://localhost:3000 to view the Blue Service.
+4. Push the Image to DockerHub
+Login to DockerHub:
+
+docker login
+
+Tag and Push the Image:
+
+docker tag yourdockerhubusername/blue-service:latest yourdockerhubusername/blue-service:blue
+docker push yourdockerhubusername/blue-service:blue
+
+Your Blue Service app is now ready and pushed to DockerHub. Let me know if you want to proceed with deploying it to Kubernetes!
+
+
+
+
+
+---------------------------------------------
+
+
+2. Add HTML Templates
+views/blue.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blue Service</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body class="bg-primary text-white">
+  <div class="container text-center py-5">
+    <img src="/img/blue-logo.png" alt="Blue Service" class="mb-4" style="max-width: 200px;">
+    <h1>Welcome to the Blue Service</h1>
+    <p class="lead">This is the blue version of the application.</p>
+  </div>
+</body>
+</html>
+
+views/green.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Service</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body class="bg-success text-white">
+  <div class="container text-center py-5">
+    <img src="/img/green-logo.png" alt="Green Service" class="mb-4" style="max-width: 200px;">
+    <h1>Welcome to the Green Service</h1>
+    <p class="lead">This is the green version of the application.</p>
+  </div>
+</body>
+</html>
+
+
+-------------------------------------------------
+
+
+Steps to Perform a Rolling Update
+
+    Apply the Deployment File with the Green Image: Update the image field in the deployment file to:
+
+image: yourdockerhubusername/blue-green-node-app:green
+
+Apply the updated file:
+
+kubectl apply -f deployment.yml
+
+Verify the Update: Check the rollout status to ensure the green service has replaced the blue service:
+
+kubectl rollout status deployment/node-app-deployment
+
+Rollback (if needed): If the green service has issues, you can roll back to the previous blue service:
+
+    kubectl rollout undo deployment/node-app-deployment
+
+---------------------------------------------
+
+1. Create the Initial Deployment with Blue Service
+
+Start with the Blue Service:
+Deployment File (deployment.yml):
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app-deployment
+  labels:
+    app: node-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      containers:
+      - name: node-app
+        image: yourdockerhubusername/blue-green-node-app:blue
+        ports:
+        - containerPort: 3000
+
+Apply this deployment:
+
+kubectl apply -f deployment.yml
+
+Verify the deployment:
+
+kubectl get pods
+kubectl get deployment
+kubectl get svc
+
+Access the Blue Service through the service URL.
+2. Update the App for Green Service
+
+Modify the application to reflect the Green Service. For example:
+
+    HTML Content Update: Change the logo and text to represent Green Service.
+    Image Update: Use the green Docker image.
+
+Build and push the updated image:
+
+docker build -t yourdockerhubusername/blue-green-node-app:green .
+docker push yourdockerhubusername/blue-green-node-app:green
+
+3. Update the Deployment
+
+Update the image field in the existing deployment file (deployment.yml) to use the Green Service image:
+Updated Deployment File (deployment.yml):
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app-deployment
+  labels:
+    app: node-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      containers:
+      - name: node-app
+        # Update the image to green
+        image: yourdockerhubusername/blue-green-node-app:green
+        ports:
+        - containerPort: 3000
+
+Apply the update:
+
+kubectl apply -f deployment.yml
+
+Kubernetes will perform a rolling update, replacing the Blue Service pods with Green Service pods.
+4. Rollback if Needed
+
+If the Green Service has issues, rollback to the previous version (Blue Service):
+
+kubectl rollout undo deployment node-app-deployment
+
+Advantages of Using a Single Deployment File
+
+    Simplified Management: Only one deployment file to maintain.
+    Rolling Updates: Kubernetes handles scaling down old pods and scaling up new ones seamlessly.
+    Rollback Support: Easily revert to the previous version if needed.
+
+
+
+-------------------------------------------
+
+
+1. Update package.json
+
+Ensure the scripts section in your package.json includes the start script. It should look like this:
+Correct package.json:
+
+{
+  "name": "blue-service",
+  "version": "1.0.0",
+  "description": "Node.js app for Blue Service",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
+-----------------------------------------
+
+Fix: Use Absolute Path
+
+If you are already in the ~/blue-green-eks/public/css directory, you can save the file using the absolute path:
+
+curl -o ~/blue-green-eks/public/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css

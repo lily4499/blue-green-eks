@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollout-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rollout-app
+  template:
+    metadata:
+      labels:
+        app: rollout-app
+    spec:
+      containers:
+        - name: rollout-container
+          image: laly9999/blue-service:latest
+          ports:
+            - name: http
+              containerPort: 3000
+  strategy:
+    blueGreen:
+      activeService: svc-active
+      previewService: svc-preview
+      autoPromotionEnabled: false
