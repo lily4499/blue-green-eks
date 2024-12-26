@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: rollout-deployment
+  name: sample-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: rollout-app
+      app: sample-app
   template:
     metadata:
       labels:
-        app: rollout-app
+        app: sample-app
     spec:
       containers:
-        - name: rollout-container
+        - name: sample-app
           image: laly9999/green-service:latest
           ports:
             - name: http
