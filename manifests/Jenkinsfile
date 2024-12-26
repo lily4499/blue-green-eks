@@ -1,7 +1,7 @@
 node {
     def app
     
-    env.IMAGE = 'laly9999/blue-service:latest'
+    env.IMAGE = 'laly9999/sample-app'
 
     stage('Clone repository') {
              git branch: 'main', url: 'https://github.com/lily4499/blue-green-eks/manifests.git'  
@@ -16,7 +16,7 @@ node {
                         sh "git config user.name lily4499"
                         //sh "git switch master"
                         sh "cat rollout.yml"
-                        sh "sed -i 's+${IMAGE}.*+${IMAGE}:${IMAGETAG}+g' rollout.yml"
+                        sh "sed -i 's+${IMAGE}.*+${IMAGE}:${IMAGETAG}+g' manifests/rollout.yml"
                         sh "cat rollout.yml"
                         sh "git add ."
                         sh "git commit -m 'Done by Jenkins Job Rolloutmanifest: ${env.BUILD_NUMBER}'"
