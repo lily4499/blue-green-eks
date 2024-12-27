@@ -6,7 +6,7 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: -app
+      app: rollout-app
   template:
     metadata:
       labels:
@@ -23,4 +23,5 @@ spec:
       activeService: svc-active
       previewService: svc-preview
       autoPromotionEnabled: false
+
 
