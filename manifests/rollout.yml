@@ -1,26 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: sample-app
-  namespace: default
+  name: rollout-deployment
 spec:
-  replicas: 2
-  strategy:
-    blueGreen:
-      activeService: active-service
-      previewService: preview-service
-      autoPromotionEnabled: false
+  replicas: 3
   selector:
     matchLabels:
-      app: sample-app
+      app: -app
   template:
     metadata:
       labels:
-        app: sample-app
+        app: rollout-app
     spec:
       containers:
-      - name: sample-app
-        image: laly9999/sample-app:9
-        ports:
-        - containerPort: 3000
+        - name: rollout-container
+          image: laly9999/blue-service:latest
+          ports:
+            - name: http
+              containerPort: 3000
+  strategy:
+    blueGreen:
+      activeService: svc-active
+      previewService: svc-preview
+      autoPromotionEnabled: false
 
